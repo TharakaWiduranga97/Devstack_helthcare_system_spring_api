@@ -7,6 +7,7 @@ import com.devstack.healthcare.system.entity.Doctor;
 import com.devstack.healthcare.system.exceptions.EntryNotFoundException;
 import com.devstack.healthcare.system.repo.DoctorRepo;
 import com.devstack.healthcare.system.service.DoctorService;
+import com.devstack.healthcare.system.utill.mapper.DoctorMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -17,11 +18,19 @@ import java.util.Optional;
 import java.util.UUID;
 @Service
 public class DoctorServiceImpl implements DoctorService {
+    private final DoctorMapper doctorMapper;
+
+
+
+
+
+
 
     private final DoctorRepo doctorRepo;
     @Autowired
 
-    public DoctorServiceImpl(DoctorRepo doctorRepo) {
+    public DoctorServiceImpl(DoctorMapper doctorMapper, DoctorRepo doctorRepo) {
+        this.doctorMapper = doctorMapper;
         this.doctorRepo = doctorRepo;
     }
 
@@ -81,14 +90,16 @@ public class DoctorServiceImpl implements DoctorService {
         if (selectedDoctor.isEmpty()){
             throw new EntryNotFoundException("Doctor Not Found");
         }
-        Doctor doctorSel=selectedDoctor.get();
-        return new ResponseDoctorDto(
-                doctorSel.getId(),
-                doctorSel.getName(),
-                doctorSel.getAddress(),
-                doctorSel.getContact(),
-                doctorSel.getSalary()
-        );
+
+        return doctorMapper.toResponseDoctorDto(selectedDoctor.get());
+//        Doctor doctorSel=selectedDoctor.get();
+//        return new ResponseDoctorDto(
+//                doctorSel.getId(),
+//                doctorSel.getName(),
+//                doctorSel.getAddress(),
+//                doctorSel.getContact(),
+//                doctorSel.getSalary()
+//        );
 
     }
 
@@ -96,19 +107,20 @@ public class DoctorServiceImpl implements DoctorService {
     public PaginatedDoctorResponseDto getAllDoctors(String searchText, int page, int size) {
         List<Doctor> doctors = doctorRepo.searchDoctors(searchText, PageRequest.of(page, size));
         Long doctorCount = doctorRepo.countDoctors(searchText);
-        List<ResponseDoctorDto> dtos = new ArrayList<>();
-        doctors.forEach(doc->{
-            dtos.add(
-                    new ResponseDoctorDto(
-                            doc.getId(),
-                            doc.getName(),
-                            doc.getAddress(),
-                            doc.getContact(),
-                            doc.getSalary()
-                    )
+        List<ResponseDoctorDto> dtos = doctorMapper.toResponseDoctorDtoList(doctors);
 
-            );
-        });
+//        doctors.forEach(doc->{
+//            dtos.add(
+//                    new ResponseDoctorDto(
+//                            doc.getId(),
+//                            doc.getName(),
+//                            doc.getAddress(),
+//                            doc.getContact(),
+//                            doc.getSalary()
+//                    )
+//
+//            );
+//        });
         return new PaginatedDoctorResponseDto(
                 doctorCount,
                 dtos
