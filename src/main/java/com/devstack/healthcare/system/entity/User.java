@@ -13,7 +13,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@RequiredArgsConstructor
+
 
 public class User {
     @Id
@@ -28,6 +28,7 @@ public class User {
     private boolean isEnabled;
 
     @OneToMany(mappedBy="user")
+    @Column
     private Set<UserRoleHasUser> userRoleHasUsers;
 
 
