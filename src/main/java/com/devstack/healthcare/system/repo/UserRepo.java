@@ -2,6 +2,7 @@ package com.devstack.healthcare.system.repo;
 
 import com.devstack.healthcare.system.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
 
@@ -9,4 +10,6 @@ import org.springframework.stereotype.Repository;
 @EnableJpaRepositories
 public interface UserRepo extends JpaRepository <User,Long>{
 
+    @Query(value="select * from user where username=?1",nativeQuery = true)
+    User findByUserName(String username);
 }
